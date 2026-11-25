@@ -1,0 +1,24 @@
+{
+  "name": "gutenberg-pro-blocks",
+  "displayName": "Gutenberg Pro Blocks & Authoring Skill",
+  "version": "1.0.0",
+  "description": "Open-source WordPress Pro Block extension + Universal AI Agent Skill for generating valid pure WordPress 7.0 Gutenberg blocks with responsive CSS, glassmorphism, hover states, and animations.",
+  "skills": [
+    "./skills"
+  ],
+  "author": {
+    "name": "Morel Urbain",
+    "url": "https://github.com/urbainmorel"
+  },
+  "homepage": "https://github.com/urbainmorel/gutenberg-pro-blocks",
+  "repository": "https://github.com/urbainmorel/gutenberg-pro-blocks",
+  "license": "GPL-2.0-or-later AND MIT",
+  "keywords": [
+    "wordpress",
+    "gutenberg",
+    "blocks",
+    "css-grid",
+    "glassmorphism",
+    "animations"
+  ]
+}

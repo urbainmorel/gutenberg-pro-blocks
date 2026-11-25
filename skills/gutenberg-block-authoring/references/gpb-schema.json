@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gutenberg Pro Blocks (GPB) Attribute Schema",
+  "description": "Schema for the optional `gpb` attribute attached to core/* WordPress Gutenberg blocks.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "desktop": { "$ref": "#/$defs/responsiveProps" },
+    "tablet": { "$ref": "#/$defs/responsiveProps" },
+    "mobile": { "$ref": "#/$defs/responsiveProps" },
+    "glass": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "blur": { "type": "string" },
+        "saturate": { "type": "string" },
+        "bg": { "type": "string" },
+        "border": { "type": "string" },
+        "shadow": { "type": "string" }
+      }
+    },
+    "hover": { "$ref": "#/$defs/stateProps" },
+    "focus": { "$ref": "#/$defs/stateProps" },
+    "animation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "fade-up",
+            "fade-down",
+            "fade-left",
+            "fade-right",
+            "zoom-in",
+            "zoom-out",
+            "blur-in",
+            "flip-up",
+            "none"
+          ]
+        },
+        "duration": { "type": "number", "minimum": 0 },
+        "delay": { "type": "number", "minimum": 0 },
+        "easing": { "type": "string" },
+        "stagger": { "type": "number", "minimum": 0 },
+        "once": { "type": "boolean" },
+        "parallax": { "type": "number" }
+      }
+    },
+    "interactive": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["marquee", "slider", "counter", "tabs", "modal"]
+        },
+        "speed": { "type": "number" },
+        "direction": { "type": "string", "enum": ["left", "right"] },
+        "pauseOnHover": { "type": "boolean" },
+        "arrows": { "type": "boolean" },
+        "autoplay": { "type": "number" },
+        "start": { "type": "number" },
+        "end": { "type": "number" },
+        "duration": { "type": "number" },
+        "prefix": { "type": "string" },
+        "suffix": { "type": "string" },
+        "decimals": { "type": "integer", "minimum": 0 },
+        "trigger": { "type": "string" }
+      }
+    },
+    "customCss": { "type": "string" }
+  },
+  "$defs": {
+    "responsiveProps": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "display": { "type": "string" },
+        "flexDirection": { "type": "string" },
+        "justifyContent": { "type": "string" },
+        "alignItems": { "type": "string" },
+        "flexWrap": { "type": "string" },
+        "gap": { "type": "string" },
+        "rowGap": { "type": "string" },
+        "columnGap": { "type": "string" },
+        "gridTemplateColumns": { "type": "string" },
+        "gridTemplateRows": { "type": "string" },
+        "gridColumn": { "type": "string" },
+        "gridRow": { "type": "string" },
+        "padding": { "type": "string" },
+        "margin": { "type": "string" },
+        "width": { "type": "string" },
+        "minWidth": { "type": "string" },
+        "maxWidth": { "type": "string" },
+        "height": { "type": "string" },
+        "minHeight": { "type": "string" },
+        "maxHeight": { "type": "string" },
+        "position": { "type": "string" },
+        "top": { "type": "string" },
+        "right": { "type": "string" },
+        "bottom": { "type": "string" },
+        "left": { "type": "string" },
+        "zIndex": { "type": ["string", "number"] },
+        "overflow": { "type": "string" },
+        "aspectRatio": { "type": "string" },
+        "fontSize": { "type": "string" },
+        "lineHeight": { "type": "string" },
+        "letterSpacing": { "type": "string" },
+        "textAlign": { "type": "string" },
+        "borderRadius": { "type": "string" },
+        "border": { "type": "string" },
+        "borderColor": { "type": "string" },
+        "boxShadow": { "type": "string" },
+        "background": { "type": "string" },
+        "color": { "type": "string" },
+        "opacity": { "type": ["string", "number"] },
+        "transform": { "type": "string" },
+        "filter": { "type": "string" },
+        "backdropFilter": { "type": "string" },
+        "mixBlendMode": { "type": "string" },
+        "clipPath": { "type": "string" },
+        "textGradient": { "type": "string" },
+        "transition": { "type": "string" },
+        "cursor": { "type": "string" },
+        "hide": { "type": "boolean" }
+      }
+    },
+    "stateProps": {
+      "type": "object",
+      "properties": {
+        "transition": { "type": "string" },
+        "translateX": { "type": "string" },
+        "translateY": { "type": "string" },
+        "scale": { "type": ["string", "number"] },
+        "rotate": { "type": "string" },
+        "transform": { "type": "string" },
+        "background": { "type": "string" },
+        "color": { "type": "string" },
+        "border": { "type": "string" },
+        "borderColor": { "type": "string" },
+        "boxShadow": { "type": "string" },
+        "opacity": { "type": ["string", "number"] },
+        "filter": { "type": "string" },
+        "backdropFilter": { "type": "string" }
+      }
+    }
+  }
+}

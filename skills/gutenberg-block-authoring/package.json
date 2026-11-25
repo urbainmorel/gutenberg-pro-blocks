@@ -1,0 +1,13 @@
+{
+  "name": "gutenberg-block-authoring",
+  "version": "1.0.0",
+  "description": "Universal AI Agent Skill for WordPress 7.0 pure Gutenberg blocks and Gutenberg Pro Blocks (GPB)",
+  "scripts": {
+    "validate": "node scripts/validate-blocks.js --skill"
+  },
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@wordpress/block-serialization-default-parser": "^5.48.0"
+  }
+}

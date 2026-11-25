@@ -1,0 +1,111 @@
+/* Gutenberg Pro Blocks (GPB) - Lightweight Frontend Runtime Styles */
+
+.gpb-animate {
+	will-change: transform, opacity;
+}
+
+.gpb-anim-done {
+	will-change: auto;
+}
+
+/* Marquee */
+.gpb-interactive-marquee {
+	overflow: hidden;
+	width: 100%;
+}
+
+.gpb-marquee-viewport {
+	display: flex;
+	width: max-content;
+	gap: 2rem;
+	animation: gpb-marquee-scroll var(--gpb-marquee-duration, 28s) linear infinite;
+}
+
+.gpb-marquee-reverse {
+	animation-direction: reverse;
+}
+
+.gpb-marquee-pause:hover {
+	animation-play-state: paused;
+}
+
+.gpb-marquee-track {
+	display: flex;
+	align-items: center;
+	gap: 2rem;
+	flex-shrink: 0;
+}
+
+@keyframes gpb-marquee-scroll {
+	from {
+		transform: translate3d(0, 0, 0);
+	}
+	to {
+		transform: translate3d(-50%, 0, 0);
+	}
+}
+
+/* Slider */
+.gpb-slider-ready {
+	position: relative;
+}
+
+.gpb-slider-track {
+	display: flex;
+	gap: 1.5rem;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scroll-behavior: smooth;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.gpb-slider-track::-webkit-scrollbar {
+	display: none;
+}
+
+.gpb-slide {
+	flex: 0 0 min(100%, 360px);
+	scroll-snap-align: start;
+}
+
+.gpb-slider-nav {
+	display: flex;
+	gap: 0.5rem;
+	justify-content: flex-end;
+	margin-top: 1rem;
+}
+
+.gpb-slider-btn {
+	appearance: none;
+	border: 1px solid currentColor;
+	background: transparent;
+	color: inherit;
+	width: 40px;
+	height: 40px;
+	border-radius: 9999px;
+	cursor: pointer;
+	font-size: 1rem;
+	transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.gpb-slider-btn:hover {
+	opacity: 0.75;
+	transform: scale(1.05);
+}
+
+/* Modal */
+.gpb-modal-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 99999;
+	display: grid;
+	place-items: center;
+	padding: 1.5rem;
+	background: rgba(0, 0, 0, 0.65);
+	backdrop-filter: blur(6px);
+}
+
+.gpb-modal-overlay[hidden] {
+	display: none;
+}

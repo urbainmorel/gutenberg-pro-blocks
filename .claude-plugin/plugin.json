@@ -1,0 +1,12 @@
+{
+  "name": "gutenberg-pro-blocks",
+  "version": "1.0.0",
+  "description": "WordPress 7.0 pure Gutenberg block authoring skill + GPB Pro extension attributes for advanced responsive, glassmorphism, hover, and animated designs.",
+  "author": {
+    "name": "Morel Urbain",
+    "url": "https://github.com/urbainmorel"
+  },
+  "repository": "https://github.com/urbainmorel/gutenberg-pro-blocks",
+  "license": "MIT",
+  "skills": "./skills/"
+}

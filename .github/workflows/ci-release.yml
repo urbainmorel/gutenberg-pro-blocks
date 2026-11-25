@@ -1,0 +1,40 @@
+name: Validate & Package Release
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies and validate Gutenberg block markup
+        run: |
+          npm ci --no-audit --no-fund
+          npm run validate
+
+      - name: Package WordPress Plugin ZIP
+        run: |
+          cd wordpress-plugin
+          zip -r ../gutenberg-pro-blocks.zip gutenberg-pro-blocks/
+
+      - name: Upload Plugin ZIP Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gutenberg-pro-blocks-wp-plugin
+          path: gutenberg-pro-blocks.zip
+
+      - name: Attach ZIP to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: gutenberg-pro-blocks.zip
