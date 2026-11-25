@@ -3492,3 +3492,13 @@ Any native block text/HTML can embed server-resolved tokens without breaking Gut
 ```
 
 See `references/gpb-schema.json` for the formal JSON schema and `references/pro-patterns.md` for full-section production templates.
+
+### WordPress MCP Adapter & Abilities API (`gpb/v1`)
+
+When connected to a WordPress site running `WordPress/mcp-adapter` (or REST `/wp-json/gpb/v1/*`), 6 MCP-public abilities expose 100% of GPB:
+- `gpb/get-schema` (`GET /gpb/v1/schema`)
+- `gpb/upsert-page` (`POST /gpb/v1/page`) — create/update pages, posts, or CPTs with GPB markup
+- `gpb/upsert-template-part` (`POST /gpb/v1/template-part`) — create/update FSE headers, footers, and templates
+- `gpb/get-post-blocks` (`GET /gpb/v1/post/{id}/blocks`) — inspect top-level block indices and `attrs.gpb`
+- `gpb/update-block-gpb` (`POST /gpb/v1/post/{id}/block-gpb`) — surgically merge/replace `attrs.gpb` by `block_index`
+- `gpb/compile-css-preview` (`POST /gpb/v1/compile-css`) — dry-run compiled CSS output

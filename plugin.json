@@ -1,7 +1,7 @@
 {
   "name": "gutenberg-pro-blocks",
   "displayName": "Gutenberg Pro Blocks & Authoring Skill",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Open-source WordPress Pro Block extension + Universal AI Agent Skill for generating valid pure WordPress 7.0 Gutenberg blocks with responsive CSS, glassmorphism, hover states, and animations.",
   "skills": [
     "./skills"

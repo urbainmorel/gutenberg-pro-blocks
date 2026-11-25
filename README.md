@@ -1,6 +1,6 @@
 # Gutenberg Pro Blocks (GPB) + Universal AI Block Authoring Skill
 
-**100% Free & Open-Source (`v3.0.0`)** (`GPL-2.0-or-later` + `MIT`) — Build agency-grade, **Elementor Pro-class dynamic WordPress websites** using **pure native Gutenberg HTML comments (`<!-- wp:... -->`)** with a full **Visual 3D, Responsive & Dynamic Inspector in Gutenberg**, server-side Display Conditions & ACF/WooCommerce Dynamic Tags, zero block recovery errors, and **0 bytes of admin UI overhead** on the visitor's frontend.
+**100% Free & Open-Source (`v3.1.0`)** (`GPL-2.0-or-later` + `MIT`) — Build agency-grade, **Elementor Pro-class dynamic WordPress websites** using **pure native Gutenberg HTML comments (`<!-- wp:... -->`)** with a full **Visual 3D, Responsive & Dynamic Inspector in Gutenberg**, native **WordPress MCP Adapter / Abilities API** integration, server-side Display Conditions & ACF/WooCommerce Dynamic Tags, zero block recovery errors, and **0 bytes of admin UI overhead** on the visitor's frontend.
 
 ---
 
@@ -162,3 +162,18 @@ node skills/gutenberg-block-authoring/scripts/validate-blocks.js --file my-page.
 
 - **WordPress Plugin (`wordpress-plugin/`)**: Licensed under **GPL-2.0-or-later** (`LICENSE-GPL-2.0.txt`) for full WordPress ecosystem compatibility.
 - **AI Skill, JSON Schemas, Installers & Validator (`skills/`, `install.*`, `plugin.json`)**: Dual-licensed under **MIT** (`LICENSE-MIT.txt`) and **GPL-2.0-or-later**.
+
+---
+
+## 100% Controllable via WordPress MCP Adapter (`gpb/v1`)
+
+Both **WordPress Abilities API (`wp_register_ability` with `mcp.public = true`)** and mirrored **REST API (`/wp-json/gpb/v1/*`)** routes are built in:
+
+| Ability / MCP Tool | REST Endpoint | Purpose |
+| :--- | :--- | :--- |
+| `gpb/get-schema` | `GET /wp-json/gpb/v1/schema` | Discover all GPB v3 breakpoints, animations, controllers, conditions & tags |
+| `gpb/upsert-page` | `POST /wp-json/gpb/v1/page` | Create or update any page/post/CPT with validated GPB block markup |
+| `gpb/upsert-template-part` | `POST /wp-json/gpb/v1/template-part` | Create or update FSE `wp_template_part` (headers, footers) & `wp_template` |
+| `gpb/get-post-blocks` | `GET /wp-json/gpb/v1/post/{id}/blocks` | Inspect block indices and `attrs.gpb` of an existing page |
+| `gpb/update-block-gpb` | `POST /wp-json/gpb/v1/post/{id}/block-gpb` | Surgically merge/replace `attrs.gpb` on a single block by index |
+| `gpb/compile-css-preview` | `POST /wp-json/gpb/v1/compile-css` | Preview compiled responsive/3D CSS |
