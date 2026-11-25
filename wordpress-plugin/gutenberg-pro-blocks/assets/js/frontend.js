@@ -35,8 +35,24 @@
 			{ opacity: 1, filter: 'blur(0px)', transform: 'translate3d(0, 0, 0)' },
 		],
 		'flip-up': [
-			{ opacity: 0, transform: 'perspective(800px) rotateX(18deg) translate3d(0, 20px, 0)' },
-			{ opacity: 1, transform: 'perspective(800px) rotateX(0deg) translate3d(0, 0, 0)' },
+			{ opacity: 0, transform: 'perspective(900px) rotateX(22deg) translate3d(0, 24px, 0)' },
+			{ opacity: 1, transform: 'perspective(900px) rotateX(0deg) translate3d(0, 0, 0)' },
+		],
+		'flip-down': [
+			{ opacity: 0, transform: 'perspective(900px) rotateX(-22deg) translate3d(0, -24px, 0)' },
+			{ opacity: 1, transform: 'perspective(900px) rotateX(0deg) translate3d(0, 0, 0)' },
+		],
+		'flip-left': [
+			{ opacity: 0, transform: 'perspective(900px) rotateY(22deg) translate3d(24px, 0, 0)' },
+			{ opacity: 1, transform: 'perspective(900px) rotateY(0deg) translate3d(0, 0, 0)' },
+		],
+		'flip-right': [
+			{ opacity: 0, transform: 'perspective(900px) rotateY(-22deg) translate3d(-24px, 0, 0)' },
+			{ opacity: 1, transform: 'perspective(900px) rotateY(0deg) translate3d(0, 0, 0)' },
+		],
+		'rotate-3d': [
+			{ opacity: 0, transform: 'perspective(900px) rotateX(18deg) rotateY(-14deg) scale(0.92)' },
+			{ opacity: 1, transform: 'perspective(900px) rotateX(0deg) rotateY(0deg) scale(1)' },
 		],
 	};
 
@@ -139,6 +155,75 @@
 			);
 			updateParallax();
 		}
+	}
+
+	function initTilt3d( el, cfg ) {
+		if ( prefersReduced ) return;
+		const maxTilt = Number( cfg.maxTilt ) || 12;
+		const perspective = Number( cfg.perspective ) || 1000;
+		const scale = Number( cfg.scale ) || 1.03;
+		const useGlare = cfg.glare !== false;
+
+		el.style.transformStyle = 'preserve-3d';
+		el.style.transition = 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+
+		let glareEl = null;
+		if ( useGlare ) {
+			if ( getComputedStyle( el ).position === 'static' ) {
+				el.style.position = 'relative';
+			}
+			glareEl = document.createElement( 'div' );
+			glareEl.className = 'gpb-tilt-glare';
+			glareEl.setAttribute( 'aria-hidden', 'true' );
+			el.appendChild( glareEl );
+		}
+
+		let raf = 0;
+		el.addEventListener( 'pointermove', ( e ) => {
+			if ( raf ) cancelAnimationFrame( raf );
+			raf = requestAnimationFrame( () => {
+				const rect = el.getBoundingClientRect();
+				const px = ( e.clientX - rect.left ) / rect.width;
+				const py = ( e.clientY - rect.top ) / rect.height;
+				const rotY = ( px - 0.5 ) * 2 * maxTilt;
+				const rotX = ( 0.5 - py ) * 2 * maxTilt;
+				el.style.transform = `perspective(${ perspective }px) rotateX(${ rotX.toFixed( 2 ) }deg) rotateY(${ rotY.toFixed( 2 ) }deg) scale3d(${ scale }, ${ scale }, ${ scale })`;
+				if ( glareEl ) {
+					glareEl.style.opacity = '1';
+					glareEl.style.background = `radial-gradient(circle at ${ ( px * 100 ).toFixed( 1 ) }% ${ ( py * 100 ).toFixed( 1 ) }%, rgba(255,255,255,0.28), transparent 60%)`;
+				}
+			} );
+		} );
+
+		el.addEventListener( 'pointerleave', () => {
+			if ( raf ) cancelAnimationFrame( raf );
+			el.style.transform = `perspective(${ perspective }px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+			if ( glareEl ) {
+				glareEl.style.opacity = '0';
+			}
+		} );
+	}
+
+	function initMagnetic( el, cfg ) {
+		if ( prefersReduced ) return;
+		const strength = Number( cfg.strength ) || 0.32;
+		el.style.transition = 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+
+		let raf = 0;
+		el.addEventListener( 'pointermove', ( e ) => {
+			if ( raf ) cancelAnimationFrame( raf );
+			raf = requestAnimationFrame( () => {
+				const rect = el.getBoundingClientRect();
+				const dx = ( e.clientX - ( rect.left + rect.width / 2 ) ) * strength;
+				const dy = ( e.clientY - ( rect.top + rect.height / 2 ) ) * strength;
+				el.style.transform = `translate3d(${ dx.toFixed( 1 ) }px, ${ dy.toFixed( 1 ) }px, 0)`;
+			} );
+		} );
+
+		el.addEventListener( 'pointerleave', () => {
+			if ( raf ) cancelAnimationFrame( raf );
+			el.style.transform = 'translate3d(0, 0, 0)';
+		} );
 	}
 
 	function initCounter( el, cfg ) {
@@ -271,6 +356,45 @@
 		activate( 0 );
 	}
 
+	function initAccordion( el, cfg ) {
+		const items = Array.from( el.children );
+		const singleOpen = cfg.singleOpen !== false;
+		items.forEach( ( item ) => {
+			const trigger = item.querySelector( '.wp-block-heading, button, summary' ) || item.firstElementChild;
+			const content = trigger && trigger.nextElementSibling;
+			if ( ! trigger || ! content ) return;
+			trigger.style.cursor = 'pointer';
+			trigger.setAttribute( 'role', 'button' );
+			trigger.setAttribute( 'tabindex', '0' );
+			trigger.setAttribute( 'aria-expanded', 'false' );
+			content.hidden = true;
+
+			const toggle = () => {
+				const isOpen = trigger.getAttribute( 'aria-expanded' ) === 'true';
+				if ( singleOpen && ! isOpen ) {
+					items.forEach( ( other ) => {
+						const t = other.querySelector( '[role="button"]' );
+						const c = t && t.nextElementSibling;
+						if ( t && c ) {
+							t.setAttribute( 'aria-expanded', 'false' );
+							c.hidden = true;
+						}
+					} );
+				}
+				trigger.setAttribute( 'aria-expanded', String( ! isOpen ) );
+				content.hidden = isOpen;
+			};
+
+			trigger.addEventListener( 'click', toggle );
+			trigger.addEventListener( 'keydown', ( e ) => {
+				if ( e.key === 'Enter' || e.key === ' ' ) {
+					e.preventDefault();
+					toggle();
+				}
+			} );
+		} );
+	}
+
 	function initModal( el, cfg ) {
 		const triggerSelector = cfg.trigger;
 		if ( ! triggerSelector ) return;
@@ -309,10 +433,13 @@
 		document.querySelectorAll( '[data-gpb-interactive]' ).forEach( ( el ) => {
 			const type = el.getAttribute( 'data-gpb-interactive' );
 			const cfg = parseJsonAttr( el, 'data-gpb-config', {} );
-			if ( type === 'counter' ) initCounter( el, cfg );
+			if ( type === 'tilt3d' ) initTilt3d( el, cfg );
+			else if ( type === 'magnetic' ) initMagnetic( el, cfg );
+			else if ( type === 'counter' ) initCounter( el, cfg );
 			else if ( type === 'marquee' ) initMarquee( el, cfg );
 			else if ( type === 'slider' ) initSlider( el, cfg );
 			else if ( type === 'tabs' ) initTabs( el );
+			else if ( type === 'accordion' ) initAccordion( el, cfg );
 			else if ( type === 'modal' ) initModal( el, cfg );
 		} );
 	}

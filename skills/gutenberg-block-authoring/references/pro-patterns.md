@@ -117,3 +117,31 @@ All patterns below use 100% pure WordPress `core/*` markup enhanced with `gpb` a
 </div>
 <!-- /wp:group -->
 ```
+
+## 5. Interactive 3D Tilt Card with Glare & Magnetic CTA
+
+```html
+<!-- wp:group {"align":"wide","gpb":{"desktop":{"display":"grid","gridTemplateColumns":"repeat(2,minmax(0,1fr))","gap":"32px","perspective":"1200px"},"mobile":{"gridTemplateColumns":"1fr"}},"layout":{"type":"default"}} -->
+<div class="wp-block-group alignwide">
+<!-- wp:group {"gpb":{"desktop":{"padding":"36px","borderRadius":"24px","transformStyle":"preserve-3d","background":"linear-gradient(145deg,#0f172a,#1e293b)","color":"#f8fafc","border":"1px solid rgba(255,255,255,0.12)"},"interactive":{"type":"tilt3d","maxTilt":14,"perspective":1000,"scale":1.03,"glare":true},"animation":{"type":"rotate-3d","duration":750,"once":true}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group">
+<!-- wp:heading {"level":3,"gpb":{"desktop":{"translateZ":"30px"}}} -->
+<h3 class="wp-block-heading">Carte 3D Interactive</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Suit le curseur avec perspective 3D, profondeur Z et reflet spéculaire temps réel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:buttons -->
+<div class="wp-block-buttons">
+<!-- wp:button {"gpb":{"interactive":{"type":"magnetic","strength":0.35},"hover":{"scale":1.05,"boxShadow":"0 16px 32px rgba(56,189,248,0.35)"}}} -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="#demo">Bouton Magnétique</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:group -->
+```

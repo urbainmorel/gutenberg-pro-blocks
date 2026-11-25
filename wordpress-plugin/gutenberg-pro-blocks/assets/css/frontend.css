@@ -1,4 +1,4 @@
-/* Gutenberg Pro Blocks (GPB) - Lightweight Frontend Runtime Styles */
+/* Gutenberg Pro Blocks (GPB) v2.0 - Lightweight Frontend Runtime Styles */
 
 .gpb-animate {
 	will-change: transform, opacity;
@@ -6,6 +6,21 @@
 
 .gpb-anim-done {
 	will-change: auto;
+}
+
+/* 3D Interactive Tilt Glare */
+.gpb-interactive-tilt3d {
+	will-change: transform;
+}
+
+.gpb-tilt-glare {
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.25s ease;
+	z-index: 2;
 }
 
 /* Marquee */

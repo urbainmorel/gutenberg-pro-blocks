@@ -1,6 +1,6 @@
 # Gutenberg Pro Blocks (GPB) + Universal AI Block Authoring Skill
 
-**100% Free & Open-Source** (`GPL-2.0-or-later` + `MIT`) — Build agency-grade, ultra-modern WordPress websites using **pure native Gutenberg HTML comments (`<!-- wp:... -->`)** with zero block recovery errors and a **100/100 Core Web Vitals** footprint.
+**100% Free & Open-Source (`v2.0.0`)** (`GPL-2.0-or-later` + `MIT`) — Build agency-grade, ultra-modern WordPress websites using **pure native Gutenberg HTML comments (`<!-- wp:... -->`)** with a full **Visual 3D & Responsive Inspector in Gutenberg**, zero block recovery errors, and **0 bytes of admin UI overhead** on the visitor's frontend.
 
 ---
 
@@ -8,14 +8,15 @@
 
 Native WordPress Gutenberg blocks (`wp:group`, `wp:columns`, `wp:heading`, `wp:button`) are lightweight and future-proof, but lack built-in controls for:
 - Per-breakpoint responsive overrides (`Desktop` / `Tablet` / `Mobile`)
-- `:hover` / `:focus` transitions (`translateY`, `scale`, `boxShadow`)
+- Full 3D CSS & Interactive 3D (`perspective`, `preserve-3d`, `rotateX/Y/Z`, `translateZ`, 3D mouse-tracking cards with specular glare, magnetic buttons)
+- `:hover` / `:focus` transitions (`translateY`, `rotate`, `scale`, `boxShadow`)
 - Glassmorphism (`backdrop-filter: blur(...)`)
 - Responsive CSS Grid column spans & positioning (`z-index`, `sticky`, `absolute`)
-- Scroll-triggered reveal animations, stagger, parallax, and lightweight interactive components (Marquee, Touch Slider, Counter, Tabs, Modal)
+- Scroll-triggered reveal animations (`fade-up`, `blur-in`, `flip-*`, `rotate-3d`, `stagger`, `parallax`) and lightweight interactive components (3D Tilt, Magnetic, Marquee, Touch Slider, Counter, Accordion, Tabs, Modal)
 
-**Gutenberg Pro Blocks (`GPB`)** solves this in two parts:
+**Gutenberg Pro Blocks (`GPB v2.0`)** solves this in two parts:
 1. **A Universal AI Agent Skill (`skills/gutenberg-block-authoring/`)** — Works across **Antigravity, Claude Code, Codex, OpenCode, Cursor, Windsurf**, and `npx skills`. Teaches your AI assistant every serialization rule of WordPress 7.0 core blocks + the `gpb` Pro attribute system, with an automated CLI validator (`validate-blocks.js`).
-2. **A Featherweight WordPress Plugin (`wordpress-plugin/gutenberg-pro-blocks/`)** — Registers the `gpb` JSON attribute on `core/*` blocks **without changing `save()` HTML**. Server-side, `WP_HTML_Tag_Processor` injects a scoped class and compiles responsive CSS on the fly. Even if you deactivate the plugin later, your core content remains 100% intact.
+2. **A Featherweight WordPress Plugin (`wordpress-plugin/gutenberg-pro-blocks/`)** — Adds a complete bidirectional **Visual Inspector (Sliders, Tabs, Presets)** in `wp-admin` (0 bytes loaded for site visitors!) and registers `gpb` on `core/*` blocks **without changing `save()` HTML**. Server-side, `WP_HTML_Tag_Processor` injects a scoped class and compiles responsive CSS on the fly. Even if you deactivate the plugin later, your core content remains 100% intact.
 
 ---
 

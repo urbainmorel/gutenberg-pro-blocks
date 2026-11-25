@@ -36,18 +36,23 @@ const GPB_RESPONSIVE_KEYS = new Set([
   'gridColumn', 'gridRow', 'padding', 'margin', 'width', 'minWidth', 'maxWidth',
   'height', 'minHeight', 'maxHeight', 'position', 'top', 'right', 'bottom', 'left',
   'zIndex', 'overflow', 'aspectRatio', 'fontSize', 'lineHeight', 'letterSpacing',
-  'textAlign', 'borderRadius', 'border', 'borderColor', 'boxShadow', 'background',
-  'color', 'opacity', 'transform', 'filter', 'backdropFilter', 'mixBlendMode',
-  'clipPath', 'textGradient', 'transition', 'cursor', 'hide',
+  'textAlign', 'borderRadius', 'border', 'borderColor', 'outline', 'outlineOffset',
+  'boxShadow', 'background', 'color', 'opacity', 'transform', 'perspective',
+  'transformStyle', 'backfaceVisibility', 'transformOrigin', 'translateX',
+  'translateY', 'translateZ', 'scale', 'rotate', 'rotateZ', 'rotateX', 'rotateY',
+  'skewX', 'skewY', 'filter', 'backdropFilter', 'mixBlendMode', 'clipPath',
+  'textGradient', 'transition', 'cursor', 'pointerEvents', 'userSelect',
+  'objectFit', 'hide',
 ]);
 
 const GPB_ANIM_TYPES = new Set([
   'fade-up', 'fade-down', 'fade-left', 'fade-right',
-  'zoom-in', 'zoom-out', 'blur-in', 'flip-up', 'none',
+  'zoom-in', 'zoom-out', 'blur-in', 'flip-up', 'flip-down',
+  'flip-left', 'flip-right', 'rotate-3d', 'none',
 ]);
 
 const GPB_INTERACTIVE_TYPES = new Set([
-  'marquee', 'slider', 'counter', 'tabs', 'modal',
+  'tilt3d', 'magnetic', 'marquee', 'slider', 'counter', 'tabs', 'accordion', 'modal',
 ]);
 
 function loadBlockSchemas() {

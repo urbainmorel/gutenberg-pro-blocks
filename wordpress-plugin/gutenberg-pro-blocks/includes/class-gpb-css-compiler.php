@@ -1,6 +1,6 @@
 <?php
 /**
- * Compiles GPB JSON attributes into scoped, responsive, sanitized CSS.
+ * Compiles GPB JSON attributes into scoped, responsive, sanitized CSS (including 3D transforms).
  *
  * @package GutenbergProBlocks
  */
@@ -52,17 +52,26 @@ class GPB_CSS_Compiler {
 		'borderRadius'        => 'border-radius',
 		'border'              => 'border',
 		'borderColor'         => 'border-color',
+		'outline'             => 'outline',
+		'outlineOffset'       => 'outline-offset',
 		'boxShadow'           => 'box-shadow',
 		'background'          => 'background',
 		'color'               => 'color',
 		'opacity'             => 'opacity',
 		'transform'           => 'transform',
+		'perspective'         => 'perspective',
+		'transformStyle'      => 'transform-style',
+		'backfaceVisibility'  => 'backface-visibility',
+		'transformOrigin'     => 'transform-origin',
 		'filter'              => 'filter',
 		'backdropFilter'      => 'backdrop-filter',
 		'mixBlendMode'        => 'mix-blend-mode',
 		'clipPath'            => 'clip-path',
 		'transition'          => 'transition',
 		'cursor'              => 'cursor',
+		'pointerEvents'       => 'pointer-events',
+		'userSelect'          => 'user-select',
+		'objectFit'           => 'object-fit',
 	);
 
 	/**
@@ -145,7 +154,8 @@ class GPB_CSS_Compiler {
 	 * @return array<string, string>
 	 */
 	private static function build_declarations( array $props ): array {
-		$decl = array();
+		$decl               = array();
+		$composed_transform = self::extract_transform_shorthands( $props );
 
 		foreach ( $props as $key => $value ) {
 			if ( 'hide' === $key ) {
@@ -178,6 +188,10 @@ class GPB_CSS_Compiler {
 					$decl['-webkit-backdrop-filter'] = $clean;
 				}
 			}
+		}
+
+		if ( '' !== $composed_transform && empty( $decl['transform'] ) ) {
+			$decl['transform'] = $composed_transform;
 		}
 
 		return $decl;
@@ -224,37 +238,55 @@ class GPB_CSS_Compiler {
 	}
 
 	/**
-	 * Build declarations for hover/focus states with transform shorthands.
+	 * Build declarations for hover/focus states with 2D & 3D transform shorthands.
 	 *
 	 * @param array<string, mixed> $state State config.
 	 * @return array<string, string>
 	 */
 	private static function build_state_declarations( array $state ): array {
-		$transforms = array();
-
-		if ( isset( $state['translateX'] ) && '' !== (string) $state['translateX'] ) {
-			$transforms[] = 'translateX(' . self::sanitize_value( (string) $state['translateX'] ) . ')';
-		}
-		if ( isset( $state['translateY'] ) && '' !== (string) $state['translateY'] ) {
-			$transforms[] = 'translateY(' . self::sanitize_value( (string) $state['translateY'] ) . ')';
-		}
-		if ( isset( $state['scale'] ) && '' !== (string) $state['scale'] ) {
-			$transforms[] = 'scale(' . self::sanitize_value( (string) $state['scale'] ) . ')';
-		}
-		if ( isset( $state['rotate'] ) && '' !== (string) $state['rotate'] ) {
-			$transforms[] = 'rotate(' . self::sanitize_value( (string) $state['rotate'] ) . ')';
-		}
-
 		$copy = $state;
-		unset( $copy['transition'], $copy['translateX'], $copy['translateY'], $copy['scale'], $copy['rotate'] );
+		unset( $copy['transition'] );
+		return self::build_declarations( $copy );
+	}
 
-		$decl = self::build_declarations( $copy );
+	/**
+	 * Extract 2D/3D transform shorthand properties into a single CSS transform value.
+	 *
+	 * @param array<string, mixed> $props Property array (modified in place).
+	 * @return string
+	 */
+	private static function extract_transform_shorthands( array &$props ): string {
+		$transforms = array();
+		$has_3d     = isset( $props['rotateX'] ) || isset( $props['rotateY'] ) || isset( $props['translateZ'] );
 
-		if ( ! empty( $transforms ) && empty( $decl['transform'] ) ) {
-			$decl['transform'] = implode( ' ', $transforms );
+		if ( $has_3d && isset( $props['perspective'] ) && '' !== (string) $props['perspective'] ) {
+			$transforms[] = 'perspective(' . self::sanitize_value( (string) $props['perspective'] ) . ')';
 		}
 
-		return $decl;
+		$fn_map = array(
+			'translateX' => 'translateX',
+			'translateY' => 'translateY',
+			'translateZ' => 'translateZ',
+			'scale'      => 'scale',
+			'rotate'     => 'rotate',
+			'rotateZ'    => 'rotateZ',
+			'rotateX'    => 'rotateX',
+			'rotateY'    => 'rotateY',
+			'skewX'      => 'skewX',
+			'skewY'      => 'skewY',
+		);
+
+		foreach ( $fn_map as $key => $css_fn ) {
+			if ( isset( $props[ $key ] ) && '' !== (string) $props[ $key ] ) {
+				$clean = self::sanitize_value( (string) $props[ $key ] );
+				if ( '' !== $clean ) {
+					$transforms[] = $css_fn . '(' . $clean . ')';
+				}
+			}
+			unset( $props[ $key ] );
+		}
+
+		return implode( ' ', $transforms );
 	}
 
 	/**
