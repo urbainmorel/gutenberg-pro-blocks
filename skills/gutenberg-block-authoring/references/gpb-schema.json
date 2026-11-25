@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Gutenberg Pro Blocks (GPB) v2.0 Attribute Schema",
+  "title": "Gutenberg Pro Blocks (GPB) v3.0 Attribute Schema",
   "description": "Schema for the optional `gpb` attribute attached to core/* WordPress Gutenberg blocks.",
   "type": "object",
   "additionalProperties": false,
@@ -21,6 +21,32 @@
     },
     "hover": { "$ref": "#/$defs/stateProps" },
     "focus": { "$ref": "#/$defs/stateProps" },
+    "conditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "loggedIn": { "type": "boolean" },
+        "userRole": { "type": ["string", "array"] },
+        "postType": { "type": ["string", "array"] },
+        "wooCart": { "type": "string", "enum": ["empty", "not_empty"] },
+        "metaKey": { "type": "string" },
+        "metaCompare": { "type": "string", "enum": ["exists", "not_exists", "equals", "not_equals", "gt", "lt", "contains"] },
+        "metaValue": { "type": ["string", "number", "boolean"] },
+        "urlParam": { "type": "string" },
+        "dateFrom": { "type": "string" },
+        "dateTo": { "type": "string" },
+        "dayOfWeek": { "type": ["string", "array"] }
+      }
+    },
+    "dynamic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "linkSource": { "type": "string" },
+        "imageSource": { "type": "string" },
+        "fallback": { "type": "string" }
+      }
+    },
     "animation": {
       "type": "object",
       "additionalProperties": false,
@@ -57,8 +83,17 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["tilt3d", "magnetic", "marquee", "slider", "counter", "tabs", "accordion", "modal"]
+          "enum": ["tilt3d", "magnetic", "sticky-header", "offcanvas", "countdown", "filter-grid", "before-after", "lightbox", "scroll-progress", "marquee", "slider", "counter", "tabs", "accordion", "modal"]
         },
+        "scrollOffset": { "type": "number" },
+        "hideOnScrollDown": { "type": "boolean" },
+        "scrolledBg": { "type": "string" },
+        "scrolledBlur": { "type": "string" },
+        "scrolledPadding": { "type": "string" },
+        "position": { "type": "string", "enum": ["right", "left", "bottom"] },
+        "targetDate": { "type": "string" },
+        "evergreenMinutes": { "type": "number" },
+        "initialPos": { "type": "number" },
         "maxTilt": { "type": "number" },
         "perspective": { "type": "number" },
         "scale": { "type": "number" },

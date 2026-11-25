@@ -3443,8 +3443,19 @@ The `gpb` attribute lives **only in the JSON comment delimiter** (`<!-- wp:group
 | `gpb.hover` | `:hover` state + smooth transition | `transition`, `translateX`, `translateY`, `translateZ`, `scale`, `rotate`, `rotateZ`, `rotateX`, `rotateY`, `skewX`, `skewY`, `perspective`, `transform`, `background`, `color`, `borderColor`, `boxShadow`, `opacity`, `filter`, `backdropFilter` |
 | `gpb.focus` | `:focus-visible` state | Same properties as `hover` |
 | `gpb.animation` | Scroll-triggered WAAPI animation & parallax | `type` (`"fade-up"`, `"fade-down"`, `"fade-left"`, `"fade-right"`, `"zoom-in"`, `"zoom-out"`, `"blur-in"`, `"flip-up"`, `"flip-down"`, `"flip-left"`, `"flip-right"`, `"rotate-3d"`, `"none"`), `duration` (ms), `delay` (ms), `easing`, `stagger` (ms between child elements), `once` (bool), `parallax` (float speed, e.g. `0.15` or `-0.12`) |
-| `gpb.interactive` | Lightweight frontend controller | `type`: `"tilt3d"` (`maxTilt`, `perspective`, `scale`, `glare`), `"magnetic"` (`strength`), `"marquee"` (`speed`, `direction`, `pauseOnHover`), `"slider"` (`arrows`, `autoplay`), `"counter"` (`start`, `end`, `duration`, `prefix`, `suffix`, `decimals`), `"accordion"` (`singleOpen`), `"tabs"`, `"modal"` (`trigger`) |
+| `gpb.interactive` | Lightweight frontend controller | `type`: `"tilt3d"` (`maxTilt`, `perspective`, `scale`, `glare`), `"magnetic"` (`strength`), `"sticky-header"` (`scrollOffset`, `hideOnScrollDown`, `scrolledBg`, `scrolledBlur`), `"offcanvas"` (`position`, `trigger`), `"countdown"` (`targetDate`, `evergreenMinutes`), `"filter-grid"`, `"before-after"` (`initialPos`), `"lightbox"`, `"scroll-progress"`, `"marquee"` (`speed`, `direction`, `pauseOnHover`), `"slider"` (`arrows`, `autoplay`), `"counter"` (`start`, `end`, `duration`, `prefix`, `suffix`, `decimals`), `"accordion"` (`singleOpen`), `"tabs"`, `"modal"` (`trigger`) |
+| `gpb.conditions` | Server-side Display Conditions (0 bytes frontend) | `loggedIn` (bool), `userRole` (string/array), `postType` (string/array), `wooCart` (`"empty"` \| `"not_empty"`), `metaKey`, `metaCompare` (`"exists"` \| `"not_exists"` \| `"equals"` \| `"not_equals"` \| `"gt"` \| `"lt"` \| `"contains"`), `metaValue`, `urlParam` (`"key=val"`), `dateFrom`, `dateTo`, `dayOfWeek` |
+| `gpb.dynamic` | Server-side Dynamic Attribute Bindings | `linkSource` (`"post:url"`, `"woo:add_to_cart_url"`, `"meta:<key>"`), `imageSource` (`"post:featured_image"`, `"meta:<key>"`), `fallback` |
 | `gpb.customCss` | Scoped CSS using `&` selector | e.g. `"&:hover .wp-block-heading{color:#38bdf8}"` |
+
+### Server-Side Dynamic Tags (`{{namespace:key|fallback}}`)
+
+Any native block text/HTML can embed server-resolved tokens without breaking Gutenberg validation:
+- **Post**: `{{post:title}}`, `{{post:excerpt}}`, `{{post:date}}`, `{{post:url}}`, `{{post:author}}`
+- **ACF / Post Meta**: `{{acf:field_name}}`, `{{meta:field_key}}`
+- **WooCommerce**: `{{woo:price}}`, `{{woo:regular_price}}`, `{{woo:sale_price}}`, `{{woo:discount_pct}}`, `{{woo:stock_status}}`, `{{woo:stock_qty}}`, `{{woo:rating}}`, `{{woo:cart_count}}`, `{{woo:cart_total}}`
+- **User**: `{{user:display_name}}`, `{{user:first_name}}`, `{{user:email}}`, `{{user:role}}`, `{{user_meta:key}}`
+- **Site / Date / Query**: `{{site:name}}`, `{{date:Y}}`, `{{query:utm_campaign|Default}}`
 
 ### Validated Pro Block Examples
 

@@ -226,6 +226,225 @@
 		} );
 	}
 
+	function initStickyHeader( el, cfg ) {
+		const offset = Number( cfg.scrollOffset ) || 50;
+		const hideDown = cfg.hideOnScrollDown === true;
+		if ( cfg.scrolledBg ) el.style.setProperty( '--gpb-scrolled-bg', cfg.scrolledBg );
+		if ( cfg.scrolledBlur ) el.style.setProperty( '--gpb-scrolled-blur', `blur(${ cfg.scrolledBlur })` );
+		if ( cfg.scrolledPadding ) el.style.setProperty( '--gpb-scrolled-padding', cfg.scrolledPadding );
+
+		let lastY = window.scrollY;
+		let ticking = false;
+		const update = () => {
+			const y = window.scrollY;
+			el.classList.toggle( 'gpb-is-scrolled', y > offset );
+			if ( hideDown ) {
+				el.classList.toggle( 'gpb-header-hidden', y > offset && y > lastY );
+			}
+			lastY = y;
+			ticking = false;
+		};
+		window.addEventListener(
+			'scroll',
+			() => {
+				if ( ! ticking ) {
+					requestAnimationFrame( update );
+					ticking = true;
+				}
+			},
+			{ passive: true }
+		);
+		update();
+	}
+
+	function initOffcanvas( el, cfg ) {
+		const pos = cfg.position || 'right';
+		const trigger = cfg.trigger;
+		el.classList.add( 'gpb-offcanvas', `gpb-offcanvas-${ pos }` );
+		el.setAttribute( 'role', 'dialog' );
+		el.setAttribute( 'aria-modal', 'true' );
+		el.setAttribute( 'aria-hidden', 'true' );
+
+		const backdrop = document.createElement( 'div' );
+		backdrop.className = 'gpb-offcanvas-backdrop';
+		el.parentNode.insertBefore( backdrop, el );
+
+		const open = () => {
+			el.classList.add( 'is-open' );
+			backdrop.classList.add( 'is-open' );
+			el.setAttribute( 'aria-hidden', 'false' );
+			document.body.style.overflow = 'hidden';
+		};
+		const close = () => {
+			el.classList.remove( 'is-open' );
+			backdrop.classList.remove( 'is-open' );
+			el.setAttribute( 'aria-hidden', 'true' );
+			document.body.style.overflow = '';
+		};
+
+		if ( trigger ) {
+			document.querySelectorAll( trigger ).forEach( ( btn ) => {
+				btn.addEventListener( 'click', ( e ) => {
+					e.preventDefault();
+					open();
+				} );
+			} );
+		}
+
+		backdrop.addEventListener( 'click', close );
+		el.addEventListener( 'click', ( e ) => {
+			if ( e.target.closest( '[data-gpb-close]' ) ) close();
+		} );
+		document.addEventListener( 'keydown', ( e ) => {
+			if ( e.key === 'Escape' && el.classList.contains( 'is-open' ) ) close();
+		} );
+	}
+
+	function initCountdown( el, cfg ) {
+		let targetMs = cfg.targetDate ? Date.parse( cfg.targetDate ) : 0;
+		if ( ! targetMs && cfg.evergreenMinutes ) {
+			const storageKey = 'gpb_cd_' + ( el.id || el.className.slice( 0, 24 ) );
+			const saved = localStorage.getItem( storageKey );
+			if ( saved && Number( saved ) > Date.now() ) {
+				targetMs = Number( saved );
+			} else {
+				targetMs = Date.now() + Number( cfg.evergreenMinutes ) * 60000;
+				localStorage.setItem( storageKey, String( targetMs ) );
+			}
+		}
+		if ( ! targetMs ) return;
+
+		let dEl = el.querySelector( '[data-gpb-unit="days"]' );
+		let hEl = el.querySelector( '[data-gpb-unit="hours"]' );
+		let mEl = el.querySelector( '[data-gpb-unit="minutes"]' );
+		let sEl = el.querySelector( '[data-gpb-unit="seconds"]' );
+
+		if ( ! dEl && ! hEl && ! mEl && ! sEl ) {
+			el.innerHTML =
+				'<div class="gpb-countdown-grid">' +
+				'<div class="gpb-cd-box"><span data-gpb-unit="days">00</span><small>Jours</small></div>' +
+				'<div class="gpb-cd-box"><span data-gpb-unit="hours">00</span><small>Heures</small></div>' +
+				'<div class="gpb-cd-box"><span data-gpb-unit="minutes">00</span><small>Min</small></div>' +
+				'<div class="gpb-cd-box"><span data-gpb-unit="seconds">00</span><small>Sec</small></div>' +
+				'</div>';
+			dEl = el.querySelector( '[data-gpb-unit="days"]' );
+			hEl = el.querySelector( '[data-gpb-unit="hours"]' );
+			mEl = el.querySelector( '[data-gpb-unit="minutes"]' );
+			sEl = el.querySelector( '[data-gpb-unit="seconds"]' );
+		}
+
+		const pad = ( n ) => String( Math.max( 0, n ) ).padStart( 2, '0' );
+		const tick = () => {
+			const diff = Math.max( 0, Math.floor( ( targetMs - Date.now() ) / 1000 ) );
+			if ( dEl ) dEl.textContent = pad( Math.floor( diff / 86400 ) );
+			if ( hEl ) hEl.textContent = pad( Math.floor( ( diff % 86400 ) / 3600 ) );
+			if ( mEl ) mEl.textContent = pad( Math.floor( ( diff % 3600 ) / 60 ) );
+			if ( sEl ) sEl.textContent = pad( diff % 60 );
+		};
+		tick();
+		setInterval( tick, 1000 );
+	}
+
+	function initFilterGrid( el ) {
+		const btns = el.querySelectorAll( '[data-gpb-filter]' );
+		const items = el.querySelectorAll( '[data-gpb-category]' );
+		if ( ! btns.length || ! items.length ) return;
+
+		btns.forEach( ( btn ) => {
+			btn.addEventListener( 'click', ( e ) => {
+				e.preventDefault();
+				const filter = btn.getAttribute( 'data-gpb-filter' );
+				btns.forEach( ( b ) => b.classList.toggle( 'is-active', b === btn ) );
+				items.forEach( ( item ) => {
+					const cats = ( item.getAttribute( 'data-gpb-category' ) || '' ).split( /\s+/ );
+					const match = filter === 'all' || filter === '*' || cats.includes( filter );
+					item.hidden = ! match;
+				} );
+			} );
+		} );
+	}
+
+	function initBeforeAfter( el, cfg ) {
+		const imgs = el.querySelectorAll( 'img' );
+		if ( imgs.length < 2 ) return;
+
+		const initial = Number( cfg.initialPos ) || 50;
+		el.classList.add( 'gpb-ba-container' );
+		el.style.setProperty( '--gpb-ba-pos', `${ initial }%` );
+
+		const beforeEl = imgs[ 0 ].closest( 'figure' ) || imgs[ 0 ];
+		const afterEl = imgs[ 1 ].closest( 'figure' ) || imgs[ 1 ];
+		beforeEl.classList.add( 'gpb-ba-before' );
+		afterEl.classList.add( 'gpb-ba-after' );
+
+		const divider = document.createElement( 'div' );
+		divider.className = 'gpb-ba-divider';
+		const range = document.createElement( 'input' );
+		range.type = 'range';
+		range.min = '0';
+		range.max = '100';
+		range.value = String( initial );
+		range.className = 'gpb-ba-range';
+		range.setAttribute( 'aria-label', 'Compare before and after images' );
+
+		range.addEventListener( 'input', () => {
+			el.style.setProperty( '--gpb-ba-pos', `${ range.value }%` );
+		} );
+
+		el.appendChild( divider );
+		el.appendChild( range );
+	}
+
+	function initLightbox( el ) {
+		const imgs = el.querySelectorAll( 'img' );
+		if ( ! imgs.length ) return;
+
+		imgs.forEach( ( img ) => {
+			img.style.cursor = 'zoom-in';
+			img.addEventListener( 'click', () => {
+				const overlay = document.createElement( 'div' );
+				overlay.className = 'gpb-lightbox-overlay';
+				overlay.setAttribute( 'role', 'dialog' );
+				const big = document.createElement( 'img' );
+				big.src = img.currentSrc || img.src;
+				big.alt = img.alt || '';
+				overlay.appendChild( big );
+				const close = () => {
+					overlay.remove();
+					document.removeEventListener( 'keydown', onKey );
+				};
+				const onKey = ( e ) => {
+					if ( e.key === 'Escape' ) close();
+				};
+				overlay.addEventListener( 'click', close );
+				document.addEventListener( 'keydown', onKey );
+				document.body.appendChild( overlay );
+			} );
+		} );
+	}
+
+	function initScrollProgress( el ) {
+		el.classList.add( 'gpb-scroll-progress-bar' );
+		let ticking = false;
+		const update = () => {
+			const max = document.documentElement.scrollHeight - window.innerHeight;
+			const ratio = max > 0 ? Math.min( 1, Math.max( 0, window.scrollY / max ) ) : 0;
+			el.style.transform = `scaleX(${ ratio.toFixed( 4 ) })`;
+			ticking = false;
+		};
+		window.addEventListener(
+			'scroll',
+			() => {
+				if ( ! ticking ) {
+					requestAnimationFrame( update );
+					ticking = true;
+				}
+			},
+			{ passive: true }
+		);
+		update();
+	}
+
 	function initCounter( el, cfg ) {
 		const targetEl = el.querySelector( '.wp-block-heading, p, strong, span' ) || el;
 		const endVal = Number( cfg.end ?? parseFloat( targetEl.textContent.replace( /[^\d.-]/g, '' ) ) ) || 0;
@@ -430,17 +649,30 @@
 	}
 
 	function initInteractive() {
+		const handlers = {
+			tilt3d: initTilt3d,
+			magnetic: initMagnetic,
+			'sticky-header': initStickyHeader,
+			offcanvas: initOffcanvas,
+			countdown: initCountdown,
+			'filter-grid': initFilterGrid,
+			'before-after': initBeforeAfter,
+			lightbox: initLightbox,
+			'scroll-progress': initScrollProgress,
+			counter: initCounter,
+			marquee: initMarquee,
+			slider: initSlider,
+			tabs: initTabs,
+			accordion: initAccordion,
+			modal: initModal,
+		};
+
 		document.querySelectorAll( '[data-gpb-interactive]' ).forEach( ( el ) => {
 			const type = el.getAttribute( 'data-gpb-interactive' );
 			const cfg = parseJsonAttr( el, 'data-gpb-config', {} );
-			if ( type === 'tilt3d' ) initTilt3d( el, cfg );
-			else if ( type === 'magnetic' ) initMagnetic( el, cfg );
-			else if ( type === 'counter' ) initCounter( el, cfg );
-			else if ( type === 'marquee' ) initMarquee( el, cfg );
-			else if ( type === 'slider' ) initSlider( el, cfg );
-			else if ( type === 'tabs' ) initTabs( el );
-			else if ( type === 'accordion' ) initAccordion( el, cfg );
-			else if ( type === 'modal' ) initModal( el, cfg );
+			if ( handlers[ type ] ) {
+				handlers[ type ]( el, cfg );
+			}
 		} );
 	}
 

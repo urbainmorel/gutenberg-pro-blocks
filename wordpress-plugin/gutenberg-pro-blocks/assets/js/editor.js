@@ -697,6 +697,13 @@
 							{ label: 'Aucun', value: '' },
 							{ label: 'Carte 3D Interactive + Reflet (tilt3d)', value: 'tilt3d' },
 							{ label: 'Bouton Magnétique Souris (magnetic)', value: 'magnetic' },
+							{ label: 'Header Sticky Intelligent (sticky-header)', value: 'sticky-header' },
+							{ label: 'Tiroir Off-Canvas (offcanvas)', value: 'offcanvas' },
+							{ label: 'Compte à rebours Promo (countdown)', value: 'countdown' },
+							{ label: 'Grille Filtrable Instantanée (filter-grid)', value: 'filter-grid' },
+							{ label: 'Comparateur Avant / Après (before-after)', value: 'before-after' },
+							{ label: 'Lightbox Zoom Image (lightbox)', value: 'lightbox' },
+							{ label: 'Barre Progression Scroll (scroll-progress)', value: 'scroll-progress' },
 							{ label: 'Marquee Défilement Infini (marquee)', value: 'marquee' },
 							{ label: 'Slider / Carrousel Tactile (slider)', value: 'slider' },
 							{ label: 'Compteur Animé (counter)', value: 'counter' },
@@ -706,6 +713,75 @@
 						],
 						onChange: ( v ) => updateSection( 'interactive', 'type', v ),
 					} ),
+					inter.type === 'sticky-header' &&
+						el(
+							Fragment,
+							null,
+							el( RangeControl, {
+								label: 'Décalage Scroll (px)',
+								value: inter.scrollOffset || 50,
+								min: 10,
+								max: 300,
+								onChange: ( v ) => updateSection( 'interactive', 'scrollOffset', v ),
+							} ),
+							el( ToggleControl, {
+								label: 'Masquer quand on descend',
+								checked: Boolean( inter.hideOnScrollDown ),
+								onChange: ( v ) => updateSection( 'interactive', 'hideOnScrollDown', v || undefined ),
+							} ),
+							el( TextControl, {
+								label: 'Fond au scroll (scrolledBg)',
+								value: inter.scrolledBg || '',
+								placeholder: 'rgba(15,23,42,0.85)',
+								onChange: ( v ) => updateSection( 'interactive', 'scrolledBg', v ),
+							} ),
+							el( TextControl, {
+								label: 'Flou au scroll (scrolledBlur)',
+								value: inter.scrolledBlur || '',
+								placeholder: '16px',
+								onChange: ( v ) => updateSection( 'interactive', 'scrolledBlur', v ),
+							} )
+						),
+					inter.type === 'offcanvas' &&
+						el(
+							Fragment,
+							null,
+							el( SelectControl, {
+								label: 'Position du tiroir',
+								value: inter.position || 'right',
+								options: [
+									{ label: 'Droite', value: 'right' },
+									{ label: 'Gauche', value: 'left' },
+									{ label: 'Bas', value: 'bottom' },
+								],
+								onChange: ( v ) => updateSection( 'interactive', 'position', v ),
+							} ),
+							el( TextControl, {
+								label: 'Sélecteur déclencheur (trigger)',
+								value: inter.trigger || '',
+								placeholder: '.btn-ouvrir-tiroir',
+								onChange: ( v ) => updateSection( 'interactive', 'trigger', v ),
+							} )
+						),
+					inter.type === 'countdown' &&
+						el(
+							Fragment,
+							null,
+							el( TextControl, {
+								label: 'Date cible ISO (targetDate)',
+								value: inter.targetDate || '',
+								placeholder: '2026-12-31T23:59:59',
+								onChange: ( v ) => updateSection( 'interactive', 'targetDate', v ),
+							} ),
+							el( RangeControl, {
+								label: 'Ou Evergreen (minutes)',
+								value: inter.evergreenMinutes || 0,
+								min: 0,
+								max: 1440,
+								step: 15,
+								onChange: ( v ) => updateSection( 'interactive', 'evergreenMinutes', v === 0 ? undefined : v ),
+							} )
+						),
 					inter.type === 'tilt3d' &&
 						el(
 							Fragment,
@@ -759,6 +835,117 @@
 				);
 			}
 
+			function renderDynamicTab() {
+				const cond = gpb.conditions || {};
+				const dyn = gpb.dynamic || {};
+				const loggedVal =
+					cond.loggedIn === true ? 'true' : cond.loggedIn === false ? 'false' : '';
+
+				return el(
+					'div',
+					{ style: { paddingTop: '10px' } },
+					el( 'strong', { style: { display: 'block', marginBottom: '8px' } }, "Conditions d'Affichage Serveur" ),
+					el( SelectControl, {
+						label: 'État Utilisateur',
+						value: loggedVal,
+						options: [
+							{ label: 'Tous les visiteurs', value: '' },
+							{ label: 'Utilisateurs connectés uniquement', value: 'true' },
+							{ label: 'Visiteurs déconnectés uniquement', value: 'false' },
+						],
+						onChange: ( v ) =>
+							updateSection(
+								'conditions',
+								'loggedIn',
+								v === 'true' ? true : v === 'false' ? false : undefined
+							),
+					} ),
+					el( TextControl, {
+						label: 'Rôle(s) Utilisateur',
+						value: cond.userRole || '',
+						placeholder: 'administrator, customer',
+						onChange: ( v ) => updateSection( 'conditions', 'userRole', v ),
+					} ),
+					el( SelectControl, {
+						label: 'Panier WooCommerce',
+						value: cond.wooCart || '',
+						options: [
+							{ label: 'Toujours afficher', value: '' },
+							{ label: 'Panier non vide uniquement', value: 'not_empty' },
+							{ label: 'Panier vide uniquement', value: 'empty' },
+						],
+						onChange: ( v ) => updateSection( 'conditions', 'wooCart', v ),
+					} ),
+					el( TextControl, {
+						label: 'Champ Meta / ACF (metaKey)',
+						value: cond.metaKey || '',
+						placeholder: 'prix_promo',
+						onChange: ( v ) => updateSection( 'conditions', 'metaKey', v ),
+					} ),
+					cond.metaKey &&
+						el(
+							Fragment,
+							null,
+							el( SelectControl, {
+								label: 'Opérateur',
+								value: cond.metaCompare || 'exists',
+								options: [
+									{ label: 'Existe (non vide)', value: 'exists' },
+									{ label: "N'existe pas", value: 'not_exists' },
+									{ label: 'Égal à (=)', value: 'equals' },
+									{ label: 'Différent de (!=)', value: 'not_equals' },
+									{ label: 'Supérieur à (>)', value: 'gt' },
+									{ label: 'Inférieur à (<)', value: 'lt' },
+									{ label: 'Contient', value: 'contains' },
+								],
+								onChange: ( v ) => updateSection( 'conditions', 'metaCompare', v ),
+							} ),
+							el( TextControl, {
+								label: 'Valeur attendue (metaValue)',
+								value: cond.metaValue || '',
+								onChange: ( v ) => updateSection( 'conditions', 'metaValue', v ),
+							} )
+						),
+					el( TextControl, {
+						label: 'Paramètre URL (urlParam)',
+						value: cond.urlParam || '',
+						placeholder: 'utm_source=vip',
+						onChange: ( v ) => updateSection( 'conditions', 'urlParam', v ),
+					} ),
+					el( TextControl, {
+						label: 'Date Début (dateFrom)',
+						value: cond.dateFrom || '',
+						placeholder: '2026-11-25 00:00',
+						onChange: ( v ) => updateSection( 'conditions', 'dateFrom', v ),
+					} ),
+					el( TextControl, {
+						label: 'Date Fin (dateTo)',
+						value: cond.dateTo || '',
+						placeholder: '2026-12-31 23:59',
+						onChange: ( v ) => updateSection( 'conditions', 'dateTo', v ),
+					} ),
+					el( 'hr', { style: { margin: '14px 0' } } ),
+					el( 'strong', { style: { display: 'block', marginBottom: '8px' } }, 'Liaisons Dynamiques' ),
+					el( TextControl, {
+						label: 'Lien Dynamique (linkSource)',
+						value: dyn.linkSource || '',
+						placeholder: 'post:url | woo:add_to_cart_url | meta:lien',
+						onChange: ( v ) => updateSection( 'dynamic', 'linkSource', v ),
+					} ),
+					el( TextControl, {
+						label: 'Image Dynamique (imageSource)',
+						value: dyn.imageSource || '',
+						placeholder: 'post:featured_image | meta:photo',
+						onChange: ( v ) => updateSection( 'dynamic', 'imageSource', v ),
+					} ),
+					el(
+						'p',
+						{ style: { fontSize: '11px', color: '#64748b', marginTop: '8px' } },
+						'Tags disponibles dans les textes : {{post:title}}, {{acf:champ}}, {{woo:price}}, {{woo:discount_pct}}, {{woo:cart_count}}, {{user:first_name}}, {{query:param|Défaut}}, {{date:Y}}'
+					)
+				);
+			}
+
 			return el(
 				Fragment,
 				null,
@@ -769,7 +956,7 @@
 					el(
 						PanelBody,
 						{
-							title: __( 'Gutenberg Pro Design (GPB v2)', 'gutenberg-pro-blocks' ),
+							title: __( 'Gutenberg Pro Design (GPB v3)', 'gutenberg-pro-blocks' ),
 							initialOpen: Object.keys( gpb ).length > 0,
 						},
 						el(
@@ -848,6 +1035,7 @@
 									{ name: 'hover3d', title: 'Hover/3D' },
 									{ name: 'glass', title: 'Glass' },
 									{ name: 'anim', title: 'Anim/Int' },
+									{ name: 'dynamic', title: 'Dyn.' },
 									{ name: 'code', title: 'CSS/JSON' },
 								],
 							},
@@ -868,6 +1056,7 @@
 								if ( tab.name === 'hover3d' ) return renderHoverAnd3dTab();
 								if ( tab.name === 'glass' ) return renderGlassTab();
 								if ( tab.name === 'anim' ) return renderAnimTab();
+								if ( tab.name === 'dynamic' ) return renderDynamicTab();
 								return el(
 									'div',
 									{ style: { paddingTop: '10px' } },

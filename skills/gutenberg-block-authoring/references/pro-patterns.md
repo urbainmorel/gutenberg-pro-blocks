@@ -145,3 +145,49 @@ All patterns below use 100% pure WordPress `core/*` markup enhanced with `gpb` a
 </div>
 <!-- /wp:group -->
 ```
+
+## 6. Smart Sticky Glass Header (Transparent -> Glass on Scroll)
+
+```html
+<!-- wp:group {"align":"full","gpb":{"desktop":{"padding":"18px 32px","display":"flex","justifyContent":"space-between","alignItems":"center"},"interactive":{"type":"sticky-header","scrollOffset":50,"hideOnScrollDown":true,"scrolledBg":"rgba(15,23,42,0.82)","scrolledBlur":"18px"}},"layout":{"type":"flex","justifyContent":"space-between"}} -->
+<div class="wp-block-group alignfull">
+<!-- wp:site-title /-->
+
+<!-- wp:buttons -->
+<div class="wp-block-buttons">
+<!-- wp:button {"className":"btn-ouvrir-tiroir","gpb":{"interactive":{"type":"magnetic","strength":0.3}}} -->
+<div class="wp-block-button btn-ouvrir-tiroir"><a class="wp-block-button__link wp-element-button" href="#reserver">Réserver ({{woo:cart_count}})</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+```
+
+## 7. Dynamic WooCommerce / Booking Card with ACF Meta & Conditional VIP Promo Countdown
+
+```html
+<!-- wp:group {"gpb":{"desktop":{"padding":"28px","borderRadius":"20px","background":"#0f172a","color":"#f8fafc"},"conditions":{"loggedIn":true},"dynamic":{"linkSource":"woo:add_to_cart_url"}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group">
+<!-- wp:paragraph {"gpb":{"conditions":{"metaKey":"badge_promo","metaCompare":"exists"},"desktop":{"color":"#38bdf8","fontSize":"0.875rem"}}} -->
+<p>Offre Membre {{user:first_name}} : {{woo:discount_pct}} ({{acf:badge_promo}})</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">{{post:title}} — {{woo:price}}</h3>
+<!-- /wp:heading -->
+
+<!-- wp:group {"gpb":{"interactive":{"type":"countdown","evergreenMinutes":120}},"layout":{"type":"default"}} -->
+<div class="wp-block-group"></div>
+<!-- /wp:group -->
+
+<!-- wp:buttons -->
+<div class="wp-block-buttons">
+<!-- wp:button -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="#cart">Ajouter au panier</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+```

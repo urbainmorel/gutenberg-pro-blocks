@@ -25,10 +25,20 @@ const GPB_TOP_KEYS = new Set([
   'glass',
   'hover',
   'focus',
+  'conditions',
+  'dynamic',
   'animation',
   'interactive',
   'customCss',
 ]);
+
+const GPB_CONDITION_KEYS = new Set([
+  'loggedIn', 'userRole', 'postType', 'wooCart',
+  'metaKey', 'metaCompare', 'metaValue', 'urlParam',
+  'dateFrom', 'dateTo', 'dayOfWeek',
+]);
+
+const GPB_DYNAMIC_KEYS = new Set(['linkSource', 'imageSource', 'fallback']);
 
 const GPB_RESPONSIVE_KEYS = new Set([
   'display', 'flexDirection', 'justifyContent', 'alignItems', 'flexWrap',
@@ -52,7 +62,9 @@ const GPB_ANIM_TYPES = new Set([
 ]);
 
 const GPB_INTERACTIVE_TYPES = new Set([
-  'tilt3d', 'magnetic', 'marquee', 'slider', 'counter', 'tabs', 'accordion', 'modal',
+  'tilt3d', 'magnetic', 'sticky-header', 'offcanvas', 'countdown',
+  'filter-grid', 'before-after', 'lightbox', 'scroll-progress',
+  'marquee', 'slider', 'counter', 'tabs', 'accordion', 'modal',
 ]);
 
 function loadBlockSchemas() {
@@ -94,6 +106,36 @@ function validateGpbAttributes(gpb, blockName, prefix, errors) {
       }
       if (prop === 'hide' && typeof val !== 'boolean') {
         errors.push({ block: blockName, level: 'error', msg: `${prefix}: "gpb.${bp}.hide" must be boolean` });
+      }
+    }
+  }
+
+  if (gpb.conditions !== undefined) {
+    if (typeof gpb.conditions !== 'object' || gpb.conditions === null || Array.isArray(gpb.conditions)) {
+      errors.push({ block: blockName, level: 'error', msg: `${prefix}: "gpb.conditions" must be an object` });
+    } else {
+      for (const k of Object.keys(gpb.conditions)) {
+        if (!GPB_CONDITION_KEYS.has(k)) {
+          errors.push({ block: blockName, level: 'error', msg: `${prefix}: Unknown gpb.conditions key "${k}"` });
+        }
+      }
+      if (gpb.conditions.wooCart && !['empty', 'not_empty'].includes(gpb.conditions.wooCart)) {
+        errors.push({ block: blockName, level: 'error', msg: `${prefix}: "gpb.conditions.wooCart" must be "empty" or "not_empty"` });
+      }
+      if (gpb.conditions.metaCompare && !['exists', 'not_exists', 'equals', 'not_equals', 'gt', 'lt', 'contains'].includes(gpb.conditions.metaCompare)) {
+        errors.push({ block: blockName, level: 'error', msg: `${prefix}: Invalid gpb.conditions.metaCompare "${gpb.conditions.metaCompare}"` });
+      }
+    }
+  }
+
+  if (gpb.dynamic !== undefined) {
+    if (typeof gpb.dynamic !== 'object' || gpb.dynamic === null || Array.isArray(gpb.dynamic)) {
+      errors.push({ block: blockName, level: 'error', msg: `${prefix}: "gpb.dynamic" must be an object` });
+    } else {
+      for (const k of Object.keys(gpb.dynamic)) {
+        if (!GPB_DYNAMIC_KEYS.has(k)) {
+          errors.push({ block: blockName, level: 'error', msg: `${prefix}: Unknown gpb.dynamic key "${k}"` });
+        }
       }
     }
   }

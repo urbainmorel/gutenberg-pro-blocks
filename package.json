@@ -1,6 +1,6 @@
 {
   "name": "gutenberg-pro-blocks",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Open-source WordPress Pro Block extension + Universal AI Agent Skill for pure Gutenberg HTML block markup",
   "scripts": {
     "validate": "node skills/gutenberg-block-authoring/scripts/validate-blocks.js --skill --path skills/gutenberg-block-authoring/SKILL.md && node skills/gutenberg-block-authoring/scripts/validate-blocks.js --skill --path skills/gutenberg-block-authoring/references/pro-patterns.md"

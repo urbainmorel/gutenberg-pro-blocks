@@ -1,7 +1,7 @@
 <?php
 /**
- * Server-side block hook that injects GPB classes, data attributes, and compiled CSS
- * without altering core block save() HTML.
+ * Server-side block hook that evaluates display conditions, resolves dynamic tags,
+ * and injects GPB classes, data attributes, and compiled CSS without altering core save() HTML.
  *
  * @package GutenbergProBlocks
  */
@@ -35,21 +35,41 @@ class GPB_Renderer {
 	}
 
 	/**
-	 * Process blocks that define `attrs.gpb` and attach scoped class & runtime metadata.
+	 * Process blocks that define `attrs.gpb` or `{{...}}` dynamic tokens.
 	 *
 	 * @param string               $block_content Rendered block HTML.
 	 * @param array<string, mixed> $block         Parsed block data.
 	 * @return string
 	 */
 	public static function filter_render_block( string $block_content, array $block ): string {
-		if ( '' === trim( $block_content ) || empty( $block['attrs']['gpb'] ) || ! is_array( $block['attrs']['gpb'] ) ) {
+		if ( '' === trim( $block_content ) ) {
 			return $block_content;
 		}
 
-		$gpb = $block['attrs']['gpb'];
-		$id  = 'gpb-' . substr( md5( (string) wp_json_encode( $gpb ) ), 0, 8 );
+		$gpb      = ( ! empty( $block['attrs']['gpb'] ) && is_array( $block['attrs']['gpb'] ) ) ? $block['attrs']['gpb'] : array();
+		$has_toks = false !== strpos( $block_content, '{{' );
 
-		if ( ! isset( self::$styles[ $id ] ) ) {
+		if ( empty( $gpb ) && ! $has_toks ) {
+			return $block_content;
+		}
+
+		// 1. Evaluate server-side display conditions (0 bytes on frontend when hidden).
+		if ( ! empty( $gpb['conditions'] ) && is_array( $gpb['conditions'] ) ) {
+			if ( ! GPB_Dynamic::should_render( $gpb['conditions'] ) ) {
+				return '';
+			}
+		}
+
+		// 2. Resolve inline dynamic tags and dynamic link/image bindings.
+		if ( $has_toks || ! empty( $gpb['dynamic'] ) ) {
+			$block_content = GPB_Dynamic::process_content( $block_content, $gpb );
+		}
+
+		// 3. Compile scoped CSS (skip if block only had conditions/dynamic).
+		$style_keys = array_diff( array_keys( $gpb ), array( 'conditions', 'dynamic', 'animation', 'interactive' ) );
+		$id         = 'gpb-' . substr( md5( (string) wp_json_encode( $gpb ) ), 0, 8 );
+
+		if ( ! empty( $style_keys ) && ! isset( self::$styles[ $id ] ) ) {
 			self::$styles[ $id ] = GPB_CSS_Compiler::compile( '.' . $id, $gpb );
 		}
 
@@ -62,7 +82,9 @@ class GPB_Renderer {
 			return $block_content;
 		}
 
-		$processor->add_class( $id );
+		if ( ! empty( $style_keys ) ) {
+			$processor->add_class( $id );
+		}
 
 		if ( ! empty( $gpb['animation'] ) && is_array( $gpb['animation'] ) ) {
 			self::$needs_runtime = true;

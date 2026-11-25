@@ -3,7 +3,7 @@
  * Plugin Name:       Gutenberg Pro Blocks (GPB)
  * Plugin URI:        https://github.com/urbainmorel/gutenberg-pro-blocks
  * Description:       Extends native WordPress Gutenberg blocks with zero-recovery responsive CSS, glassmorphism, hover/focus states, GSAP/WAAPI scroll animations, and lightweight interactive components (sliders, marquees, counters, tabs, modals) via the `gpb` JSON attribute.
- * Version:           2.0.0
+ * Version:           3.0.0
  * Requires at least: 6.5
  * Requires PHP:      7.4
  * Author:            Morel Urbain
@@ -17,11 +17,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'GPB_VERSION', '2.0.0' );
+define( 'GPB_VERSION', '3.0.0' );
 define( 'GPB_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GPB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 require_once GPB_PLUGIN_DIR . 'includes/class-gpb-css-compiler.php';
+require_once GPB_PLUGIN_DIR . 'includes/class-gpb-dynamic.php';
 require_once GPB_PLUGIN_DIR . 'includes/class-gpb-renderer.php';
 
 GPB_Renderer::init();
