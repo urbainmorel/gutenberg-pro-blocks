@@ -58,7 +58,54 @@ chmod +x install.sh && ./install.sh
 
 ---
 
-## Example: Pure Gutenberg + `gpb` Pro Attributes
+## Visual Inspector in Gutenberg (`wp-admin` Only — 0 Bytes on Frontend)
+
+Click any core block in the WordPress Block Editor to customize all GPB v3.0 properties visually without writing code:
+
+| Tab | Controls Included |
+| :--- | :--- |
+| **`Resp.`** (`Desktop` / `Tablette` / `Mobile`) | Per-screen visibility (`hide`), `display` (`flex` / `grid`), `gridTemplateColumns`, `gridColumn`, `flexDirection`, `gap`, `padding`, `margin`, `borderRadius`, `position` (`relative` / `absolute` / `sticky` / `fixed`), `zIndex`, `fontSize` (`clamp()`), `textGradient` |
+| **`Hover/3D`** | Live sliders for `:hover` `rotate` (`-180°` to `+180°`), `rotateX`, `rotateY`, `translateX`, `translateY`, `translateZ`, `scale`, `boxShadow`, `borderColor`, `transition`, plus base `perspective` and `preserve-3d` |
+| **`Glass`** | Glassmorphism sliders (`blur`, `saturate`), translucent `bg`, `border`, `shadow`, `background`, `clipPath` |
+| **`Anim/Int`** | Scroll reveal animations (`fade-*`, `zoom-*`, `blur-in`, `flip-*`, `rotate-3d`, `stagger`, `parallax`) + all 15 Interactive Controllers |
+| **`Dyn.`** | Server-side Display Conditions (`loggedIn`, `userRole`, `wooCart`, `metaKey`/`metaCompare`, `urlParam`, `dateFrom`/`dateTo`) + Dynamic `linkSource` / `imageSource` |
+| **`CSS/JSON`** | Scoped Custom CSS (`&` selector) + live-synced raw GPB JSON |
+
+---
+
+## Server-Side Dynamic Tags & Display Conditions (0 Bytes Frontend)
+
+### Dynamic Tags (`{{namespace:key|fallback}}`)
+
+Use these tokens inside any native Gutenberg text, heading, or button:
+- **Post / Archive**: `{{post:title}}`, `{{post:excerpt}}`, `{{post:date}}`, `{{post:modified}}`, `{{post:url}}`, `{{post:id}}`, `{{post:author}}`
+- **ACF & Custom Fields**: `{{acf:field_name}}`, `{{meta:field_key}}`
+- **WooCommerce**: `{{woo:price}}`, `{{woo:regular_price}}`, `{{woo:sale_price}}`, `{{woo:discount_pct}}`, `{{woo:sku}}`, `{{woo:stock_status}}`, `{{woo:stock_qty}}`, `{{woo:rating}}`, `{{woo:review_count}}`, `{{woo:cart_count}}`, `{{woo:cart_total}}`
+- **User**: `{{user:display_name}}`, `{{user:first_name}}`, `{{user:last_name}}`, `{{user:email}}`, `{{user:role}}`, `{{user_meta:key}}`
+- **Site / Date / URL Query**: `{{site:name}}`, `{{site:tagline}}`, `{{site:url}}`, `{{date:Y}}`, `{{query:utm_campaign|Default}}`
+
+### Dynamic Attribute Bindings (`gpb.dynamic`) & Display Conditions (`gpb.conditions`)
+
+- **Dynamic Links & Images**: `"dynamic": {"linkSource": "woo:add_to_cart_url", "imageSource": "post:featured_image"}`
+- **Display Conditions** (omits block completely from HTML when false):
+  - `loggedIn` (`true` / `false`), `userRole` (`"customer, administrator"`), `postType`
+  - `wooCart` (`"empty"` / `"not_empty"`)
+  - `metaKey` + `metaCompare` (`"exists"`, `"not_exists"`, `"equals"`, `"not_equals"`, `"gt"`, `"lt"`, `"contains"`) + `metaValue`
+  - `urlParam` (`"utm_source=vip"`), `dateFrom`, `dateTo`, `dayOfWeek`
+
+---
+
+## 15 Lightweight Interactive & 3D Controllers (`gpb.interactive`)
+
+Loaded on the frontend **only** when a page actually uses an interactive block:
+
+`tilt3d` (3D mouse tilt + specular glare) • `magnetic` (cursor attraction) • `sticky-header` (transparent to glass on scroll + auto-hide) • `offcanvas` (slide-over drawer) • `countdown` (fixed date or evergreen) • `filter-grid` (instant category filter) • `before-after` (image comparison slider) • `lightbox` (full-screen image zoom) • `scroll-progress` (reading progress bar) • `marquee` (infinite ticker) • `slider` (touch/snap carousel) • `counter` (animated KPI numbers) • `accordion` • `tabs` • `modal`
+
+---
+
+## Examples: Pure Gutenberg + `gpb` Pro Attributes
+
+### 1. Responsive Glassmorphism Bento Card
 
 ```html
 <!-- wp:group {"gpb":{"desktop":{"padding":"32px","borderRadius":"24px","display":"grid","gridTemplateColumns":"repeat(2,minmax(0,1fr))","gap":"24px"},"mobile":{"gridTemplateColumns":"1fr","padding":"20px"},"glass":{"blur":"16px","bg":"rgba(15,23,42,0.7)","border":"1px solid rgba(255,255,255,0.14)"},"hover":{"translateY":"-6px","boxShadow":"0 28px 56px rgba(0,0,0,0.3)"},"animation":{"type":"fade-up","duration":700,"stagger":100,"once":true}},"layout":{"type":"default"}} -->
@@ -70,6 +117,30 @@ chmod +x install.sh && ./install.sh
 <!-- wp:paragraph -->
 <p>Responsive par écran, Glassmorphism, Hover et Animations sans dépendance lourde.</p>
 <!-- /wp:paragraph -->
+</div>
+<!-- /wp:group -->
+```
+
+### 2. Conditional VIP 3D Card with WooCommerce & ACF Dynamic Tags
+
+```html
+<!-- wp:group {"gpb":{"desktop":{"padding":"28px","borderRadius":"20px","background":"#0f172a","color":"#f8fafc"},"conditions":{"loggedIn":true,"metaKey":"offre_vip","metaCompare":"exists"},"dynamic":{"linkSource":"woo:add_to_cart_url"},"interactive":{"type":"tilt3d","maxTilt":12,"perspective":1000,"glare":true}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group">
+<!-- wp:paragraph {"gpb":{"desktop":{"color":"#38bdf8"}}} -->
+<p>Offre réservée à {{user:first_name}} ({{woo:discount_pct}} — {{acf:offre_vip}})</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">{{post:title}} — {{woo:price}}</h3>
+<!-- /wp:heading -->
+
+<!-- wp:buttons -->
+<div class="wp-block-buttons">
+<!-- wp:button {"gpb":{"interactive":{"type":"magnetic","strength":0.3}}} -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="#cart">Commander</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
 </div>
 <!-- /wp:group -->
 ```
